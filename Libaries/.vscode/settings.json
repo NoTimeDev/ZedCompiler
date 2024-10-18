@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "*.zed": "zig",
+        "*.zir": "Zir",
+        "memory": "c",
+        "xmemory": "c"
+    }
+}
