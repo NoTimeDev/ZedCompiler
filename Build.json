@@ -1,0 +1,23 @@
+{   
+    "Compiler" : "clang++",
+
+    "Files" : [
+        "Zedc.cpp",
+        "src/Lexer/Lexer.cpp",
+        "src/Parser/Parser.cpp",
+        "src/Ast/Debuger.cpp",
+        "src/CodeGen/CodeGen.cpp"
+    ],
+
+    "Options" : [
+        "-O3"
+    ],
+
+    "Flags" : [
+        "-static-libstdc++",
+        "-static",
+        "-Wno-switch"
+    ],
+
+    "Exe" : "Zedc"
+}
