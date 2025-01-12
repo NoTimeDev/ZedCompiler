@@ -1,0 +1,5 @@
+#if WINDOWS
+	import <windows>
+#elif LINUX
+	import <stdunix>
+#end
