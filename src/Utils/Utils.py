@@ -17,6 +17,15 @@ BrightMagenta: str = "\033[95m"
 BrightCyan: str = "\033[96m"
 BrightWhite: str = "\033[97m"
 
+UBrightRed: str = "\033[4;91m"
+UBrightGreen: str = "\033[4;92m"
+UBrightYellow: str = "\033[4;93m"
+UBrightBlue: str = "\033[4;94m"
+UBrightMagenta: str = "\033[4;95m"
+UBrightCyan: str = "\033[4;96m"
+UBrightWhite: str = "\033[4;97m"
+
+
 Reset: str = "\033[0m"
 
 def perr(Kwargs, end="\n"):

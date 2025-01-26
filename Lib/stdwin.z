@@ -1,0 +1,1 @@
+extern ExitProcess(i32) from "Kernel32" 

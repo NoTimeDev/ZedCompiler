@@ -1,2 +1,13 @@
+#define LINUX
+
+def True {1}
+def False {0}
+
+func LICENSE() -> i8{
+    import <stdlib>
+
+    File: str = FileRead()
+}
+
 
 

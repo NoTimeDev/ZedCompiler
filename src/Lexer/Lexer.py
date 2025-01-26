@@ -1,13 +1,13 @@
 from src.Lexer.TokenKind import *
 from src.Utils.Utils import *
+from src.Error.Error import *
 
 class Lexer:
-    def __init__(self, FileName: str, SourceCode: str, ImportingFrom: list[str] = []):
-        self.FileName: str = FileName
+    def __init__(self, ErrorClass: Error, SourceCode: str):
+        self.FileName: str = ""
         self.SourceCode: str = SourceCode
         self.SourceLines: list[str] = SourceCode.split('\n')
-        self.ImportingFrom: list[str] = ImportingFrom
-        self.Err: int = 0 
+        self.Err: Error = ErrorClass
 
         self.Alphas: dict[str, TokenKind] = {
             "func":TokenKind.Func,
@@ -281,6 +281,9 @@ class Lexer:
                 case "]":
                     Add(Token(TokenKind.Square_Close_Brack, "]", Coloum, Coloum, Line))
                     Pos+=1; Coloum+=1
+                case ";":
+                    Add(Token(TokenKind.Semi, ";", Coloum, Coloum, Line))
+                    Pos+=1; Coloum+=1 
                 case "#":
                     Predefines: dict[str, TokenKind] = {
                         "#define" : TokenKind.Pre_Define,
@@ -302,7 +305,7 @@ class Lexer:
                     if Predefines.get(PreDef) != None:
                         Add(Token(Predefines[PreDef], PreDef, Start, Coloum - 1, Line))
                     else:
-                        perr("Not A PreProcess")                   
+                        self.Err.ThrowErr(Line, Start, Coloum, f"{UBrightMagenta}Lexer Error:{Reset} {BrightRed}(\"{PreDef}\" is not a valid PreProcesser){Reset}")
                 case _:
                     if self.SourceCode[Pos].isdigit():
                         NUMBERLIST = '0123456789abcdefABCDEF_.Xx'
@@ -323,15 +326,12 @@ class Lexer:
 
                         if DotCount >= 1:
                             if DotCount > 1:
-                                perr("To Much Dots")
-                                self.Err+=1
-
+                                self.Err.ThrowErr(Line, Start, Coloum, f"{UBrightMagenta}Lexer Error:{Reset} {BrightRed}(more than one dots(.) cannot be in a float){Reset}")
                             else:
                                 try:
                                     float(Number)
                                 except ValueError:
-                                    perr("Float can be hexi decimal")
-                                    self.Err+=1
+                                    self.Err.ThrowErr(Line, Start, Coloum, f"{UBrightMagenta}Lexer Error:{Reset} {BrightRed}(A float cannot be a hex){Reset}")
                                 
                             Add(Token(TokenKind.Float, Number, Start, Coloum - 1, Line))
                         else: 
@@ -344,8 +344,7 @@ class Lexer:
                                     ishex = True
 
                             if ishex == True:
-                                perr("Not Valid Hex")
-                                self.Err+=1             
+                                self.Err.ThrowErr(Line, Start, Coloum, f"{UBrightMagenta}Lexer Error:{Reset} {BrightRed}(\"{Number}\" is not a valid hex){Reset}")
                             Add(Token(TokenKind.Int, Number, Start, Coloum - 1, Line))
                     elif self.SourceCode[Pos].isalpha() or self.SourceCode[Pos] == '_':
                         Start: int = Coloum
@@ -368,9 +367,8 @@ class Lexer:
                             if String[-1] != '\\' and self.SourceCode[Pos] == '"':
                                 break
                             if self.SourceCode[Pos] == '\n':
-                                perr("Mising String Term")
+                                self.Err.ThrowErr(Line, Start, Coloum, f"{UBrightMagenta}Lexer Error:{Reset} {BrightRed}(Unterminated String Constant (\")){Reset}", Missing="\"")
                                 Got_Unterminated = True
-                                self.Err+=1
                                 break
                                  
                             String+=self.SourceCode[Pos]
@@ -389,9 +387,8 @@ class Lexer:
                             if Character[-1] != '\\' and self.SourceCode[Pos] == "'":
                                 break
                             elif self.SourceCode[Pos] == '\n':
-                                perr("Misiing Termiate Character")
+                                self.Err.ThrowErr(Line, Start, Coloum, f"{UBrightMagenta}Lexer Error:{Reset} {BrightRed}(Unterminated Char Constant (')){Reset}", Missing="'")
                                 Got_Unterminated = True
-                                self.Err+=1
                                 break
 
                             Character+=self.SourceCode[Pos]
@@ -403,18 +400,16 @@ class Lexer:
                         if Got_Unterminated == False:
                             if len(Character) > 2:
                                 if len(Character) != 1 and Character[1] != "\\":
-                                    perr("Multi Chracter character")
-                                    self.Err+=1
+                                    self.Err.ThrowErr(Line, Start, Coloum, f"{UBrightMagenta}Lexer Error:{Reset} {BrightRed}(Multi-Character Char Constant){Reset}")
 
                         Add(Token(TokenKind.Char, Character + "'", Start, Coloum - 1, Line))
                     else:
-                        perr("idk what ts is ")
-                        self.Err+=1             
+                        self.Err.ThrowErr(Line, Coloum, Coloum, f"{UBrightMagenta}Lexer Error:{Reset} {BrightRed}(Unknown token \"{self.SourceCode[Pos]}\"){Reset}") 
                         Pos+=1; Coloum+=1                                    
+            
+        
+        self.Err.Exit()
 
-        if self.Err > 0:
-            exit(1)
-
-        if len(Tokens) != 0:
-            Add(Token(TokenKind.EOF, "end of file", Tokens[-1].Start + 1, Tokens[-1].Start + 1, Tokens[-1].Line))
-        return Tokens
+        
+        Add(Token(TokenKind.EOF, "end of file", Tokens[-1].Start + 1, Tokens[-1].Start + 1, Tokens[-1].Line))
+        return Tokens 

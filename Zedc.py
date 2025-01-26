@@ -2,11 +2,25 @@ from datetime import datetime
 StartTime = datetime.now()
 
 import sys
+import json 
 
 #---Local Imports---
 from src.Utils.Utils import *
 from src.Lexer.Lexer import * 
+from src.Error.Error import *
+from src.Parser.Parser import *
 #------------------- 
+
+class AstEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Expr):
+            return o.__ToJson__()
+        elif isinstance(o, Stmt):
+            return o.__ToJson__()
+        elif isinstance(o, Program):
+            return o.__ToJson__()
+        else:
+            return o 
 
 
 def main(argv=sys.argv, argc=len(sys.argv)):
@@ -15,9 +29,8 @@ def main(argv=sys.argv, argc=len(sys.argv)):
         exit(1)
     
     Flags: dict[str, bool] = {
-        "--break-lex":False,
-        "--break-parse":False,
         "--debug-tokens": False,
+        "--debug-ast" : False,
 
         "--emit-ir":False,
         "--emit-obj":False,
@@ -54,14 +67,25 @@ def main(argv=sys.argv, argc=len(sys.argv)):
         exit(1)
     
     SourceCode+="\n"
-
+    
+    #--ErrHandle--
+    ErrorClass: Error = Error(SourceCode.split("\n"), argv[1])
     #--lexer--
-    LexerClass: Lexer = Lexer(argv[1], SourceCode)
+    LexerClass: Lexer = Lexer(ErrorClass, SourceCode)
     LexedTokens: list[Token] = LexerClass.Lex()
+
+    #--Parser--
+    ParserClass: Parser = Parser(ErrorClass, LexedTokens)
+    Ast: Program = ParserClass.Parse()
+
+
+
     if Flags["--debug-tokens"] == True:
         print(len(LexedTokens))
         for i in LexedTokens:
             print(i)
+    if Flags["--debug-ast"] == True:
+        print(json.dumps(Ast, indent=4, cls=AstEncoder))
     if len(LexedTokens) == 0:
         perr(f"{BrightWhite}zedc:{Reset} No tokens generated")
         exit(0)

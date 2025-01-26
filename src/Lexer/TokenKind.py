@@ -121,6 +121,9 @@ class TokenKind(Enum):
     Char = auto()
     Identifier = auto()
     EOF = auto()
+  
+    Semi = auto()
+    Null = auto()
 class Token:
     def __init__(self, Kind: TokenKind, Value: str, Start: int, End: int, Line: int):
         self.Kind: TokenKind = Kind
@@ -131,3 +134,5 @@ class Token:
 
     def __repr__(self) -> str:
         return "{" + f'"Kind" : {self.Kind}, "Value" : "{self.Value}", "Line" : {self.Line}, "Start" : {self.Start}, "End" : {self.End}' + "}"
+
+NullToken: Token = Token(TokenKind.Null, "Null", 0, 0, 0)
