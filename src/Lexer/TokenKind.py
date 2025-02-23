@@ -87,8 +87,9 @@ class TokenKind(Enum):
     Priv = auto()
 
 
-    Pre_If = auto()
     Pre_End = auto()
+    Pre_If = auto()
+    Pre_nIf = auto()
     Pre_Else = auto()
     Pre_Elif = auto()
     Pre_Define = auto()
@@ -114,7 +115,8 @@ class TokenKind(Enum):
     Break = auto()
     Continue = auto()
     Match = auto()
-
+    Let = auto()
+    
     Int = auto()
     Float = auto()
     String = auto()

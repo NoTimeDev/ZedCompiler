@@ -6,5 +6,24 @@ class NodeKind(Enum):
     BinExpr = auto()
     UnaryExpr = auto()
 
+    ExprStmt = auto()
+    ParameterExpr = auto()
+    
+    FuncStmt = auto()
+    VarDec = auto()
+    IntType = auto()
+        
+    IdentifierExpr = auto()
+    
+    VariableCallExpr = auto()
+    FunctionCallExpr = auto()
+    
 
+    RetStmt = auto()
+    DefArg = auto()
+    ArgExpr = auto()
+
+    NullExpr = auto()
+    NullStmt = auto()
+    NullType = auto()
     Null = auto()

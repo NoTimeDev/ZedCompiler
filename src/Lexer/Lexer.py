@@ -15,7 +15,8 @@ class Lexer:
             "union" : TokenKind.Union,
             "impl" : TokenKind.Impl,
             "interface" : TokenKind.Interface,
-
+            "let" : TokenKind.Let,
+            
             "for" : TokenKind.For,
             "while" : TokenKind.While,
 
@@ -32,13 +33,14 @@ class Lexer:
             "continue" : TokenKind.Continue,
 
             "char" : TokenKind.Type,
-            "i28" : TokenKind.Type,
             "i64" : TokenKind.Type,
             "i32" : TokenKind.Type,
             "i16" : TokenKind.Type,
             "i8" : TokenKind.Type,
 
-            "ui28" : TokenKind.Type,
+            "f64" : TokenKind.Type,
+            "f32" : TokenKind.Type,
+            
             "u64" : TokenKind.Type,
             "u32" : TokenKind.Type,
             "u16" : TokenKind.Type,
@@ -133,10 +135,6 @@ class Lexer:
                             Pos+=1
                             Coloum+=1
                         
-                        (self.SourceCode[Pos])
-                        Pos-=1
-                        Coloum-=1
-                        (self.SourceCode[Pos])
                     elif Peek() == "*":
                         Pos+=2
                         Coloum+=2
@@ -287,8 +285,9 @@ class Lexer:
                 case "#":
                     Predefines: dict[str, TokenKind] = {
                         "#define" : TokenKind.Pre_Define,
-                        "#if" : TokenKind.Pre_If,
                         "#elif" : TokenKind.Pre_Elif,
+                        "#ifndef" : TokenKind.Pre_nIf,
+                        "#ifdef" : TokenKind.Pre_If,
                         "#else" : TokenKind.Pre_Else,
                         "#end" : TokenKind.Pre_End
                     }
@@ -410,6 +409,9 @@ class Lexer:
         
         self.Err.Exit()
 
-        
-        Add(Token(TokenKind.EOF, "end of file", Tokens[-1].Start + 1, Tokens[-1].Start + 1, Tokens[-1].Line))
+        try: 
+            Add(Token(TokenKind.EOF, "end of file", Tokens[-1].Start + 1, Tokens[-1].Start + 1, Tokens[-1].Line))
+        except IndexError:
+            perr("zedc: empty file")
+            sys.exit(1)
         return Tokens 

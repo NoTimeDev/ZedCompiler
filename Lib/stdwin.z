@@ -1,1 +1,2 @@
-extern ExitProcess(i32) from "Kernel32" 
+extern ExitProcess(i32) from "123Kernel32"
+

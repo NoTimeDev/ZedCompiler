@@ -1,4 +1,5 @@
 from src.Utils.Utils import *
+import sys
 
 class Error:
     def __init__(self, SourceLines: list[str], FileName: str, Import: str = ""):
@@ -16,7 +17,7 @@ class Error:
             for i in self.ErrList:
                 perr(i)
             
-            exit(0)
+            sys.exit(0)
 
     def ThrowErr(self, Line: int, Start: int, End: int, msg: str, Colour: str = BrightRed, Missing: str = "", MisColour = BrightRed):
         if Missing == "":
@@ -32,7 +33,7 @@ class Error:
                     LineWithHighLight+=self.SourceLines[Line - 1][Pos]
                     Pos+=1
 
-                    while Pos < End - 1:
+                    while Pos < End:
                         LineWithHighLight+=self.SourceLines[Line - 1][Pos]
                         Pos+=1
                     LineWithHighLight+=Reset
@@ -52,9 +53,9 @@ class Error:
                 if Pos == Start - 1:
                     LineWithHighLight+=Colour
                     LineWithHighLight+=self.SourceLines[Line - 1][Pos]
-                    Pos+=1
+                    Pos+=1 
 
-                    while Pos < End - 1:
+                    while Pos < End:
                         LineWithHighLight+=self.SourceLines[Line - 1][Pos]
                         Pos+=1
                     LineWithHighLight+=Reset
@@ -66,32 +67,32 @@ class Error:
             self.ErrList.append(f"       {len(str(Line)) * " "}   {(End - 1) * " "}{MisColour}{Missing}{Reset}\n")
             self.Errs+=1 
 
-    def ThrowErrorInNewLine(self, Line: int, Start: int, End: int, msg: str, Colour: str = BrightRed, Missing: str = "", MisColour = BrightRed):
+    def ThrowErrorInNewLine(self, NLine: int, Ns: int, Ne: int, Line: int, Start: int, End: int, msg: str, Colour: str = BrightRed, Missing: str = "", MisColour = BrightRed):
             self.ErrList.append(f"({Line} :: {Start}-{End}) {BrightRed}[Error] {BrightBlue}[{self.FileName}]{Reset}")
             self.ErrList.append(f"╰─▶{msg}")
 
 
             self.ErrList.append(f"       {(len(str(Line + 1)) - len(str(Line))) * " "}{Line} ||{self.SourceLines[Line - 1]}")
-            self.ErrList.append(f"       {(len(str(Line + 1)) - len(str(Line))) * " "}{len(str(Line)) * " "} ||{(End) * " "}{MisColour}{Missing}{Reset}")
+            self.ErrList.append(f"       {(len(str(Line + 1)) - len(str(Line))) * " "}{len(str(Line)) * " "} ||{(End + 1) * " "}{MisColour}{Missing}{Reset}")
             
             LineWithHighLight: str = ""
             Pos: int  = 0
-            while Pos < len(self.SourceLines[Line]):
-                if Pos == 1 - 1:
-                    LineWithHighLight+=MisColour
-                    LineWithHighLight+=self.SourceLines[Line][Pos]
+            while Pos < len(self.SourceLines[NLine - 1]):
+                if Pos == Ns - 1:
+                    LineWithHighLight+=Colour
+                    LineWithHighLight+=self.SourceLines[NLine - 1][Pos]
                     Pos+=1
 
-                    while Pos < 1 - 1:
-                        LineWithHighLight+=self.SourceLines[Line][Pos]
+                    while Pos < Ne:
+                        LineWithHighLight+=self.SourceLines[NLine - 1][Pos]
                         Pos+=1
                     LineWithHighLight+=Reset
                 else:
-                    LineWithHighLight+=self.SourceLines[Line][Pos]
+                    LineWithHighLight+=self.SourceLines[NLine - 1][Pos]
                     Pos+=1
 
-            self.ErrList.append(f"       {Line + 1} ||{LineWithHighLight}")
-            self.ErrList.append(f"       {len(str(Line + 1)) * " "}   {(1 - 1) * " "}{MisColour}~{Reset}\n")
+            self.ErrList.append(f"       {NLine} ||{LineWithHighLight}")
+            self.ErrList.append(f"       {len(str(NLine + 1)) * " "}   {(Ns - 1) * " "}{MisColour}{"~" * (Ne - Ns + 1)}{Reset}\n")
             
             self.Errs+=1
 

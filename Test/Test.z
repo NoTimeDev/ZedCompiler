@@ -1,5 +1,9 @@
 //Trying Out Errs
 
-3.4.4.4
-#lol
-0xa.0
+func main() -> i32{
+    mut x: i32 = 90;
+    func lambda() -> i32{
+        return x;
+    }
+    x;
+}

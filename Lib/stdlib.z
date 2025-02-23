@@ -1,5 +1,6 @@
-#if WINDOWS
-	import <stdwin>
+#ifdef WINDOWS
+	import "stdwin"
+
 #elif LINUX
-	import <stdlin>
+	import "stdlin"
 #end

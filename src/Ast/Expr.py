@@ -4,7 +4,12 @@ from src.Lexer.TokenKind import *
 
 class NullExpr(Expr):
     def __init__(self):
-        pass 
+        self.Kind: NodeKind = NodeKind.NullExpr
+
+    def __ToJson__(self) -> dict:
+        return {
+            "Kind" : "NullExpr"
+        }
 
 class IntExpr(Expr):
     def __init__(self, Integer: str, Size: str, Loc: dict): 
@@ -18,7 +23,6 @@ class IntExpr(Expr):
             "Kind" : "Integer Expression",
             "Value" : self.Integer,
             "Size" : self.Size,
-            "Locations" : self.Loc 
         }
     
   
@@ -35,7 +39,6 @@ class FloatExpr(Expr):
             "Kind" : "Float Expression",
             "Value" : self.Float,
             "Size" : self.Size,
-            "Locations" : self.Loc
         }
     
 class BinExpr(Expr):
@@ -55,8 +58,9 @@ class BinExpr(Expr):
         }
     
 class UnaryExpr(Expr):
-    def __init__(self, expression: Expr):
-        self.Kind = NodeKind.UnaryExpr
+    def __init__(self, expression: Expr, Loc: dict = {}):
+        self.Kind: NodeKind = NodeKind.UnaryExpr
+        self.Loc: dict = Loc
         self.expression: Expr = expression
 
     def __ToJson__(self) -> dict:
@@ -65,3 +69,65 @@ class UnaryExpr(Expr):
             "Expression" : self.expression.__ToJson__()
         }
         
+class ParameterExpr(Expr):
+    def __init__(self, Name: str, Mut: bool, VarType: Type, Loc: dict = {}, Val: Expr = NullExpr()):
+        self.Kind: NodeKind = NodeKind.ParameterExpr
+        self.Name: str = Name
+        self.Mut: bool = Mut
+        self.VarType: Type = VarType
+        self.Val: Expr = Val 
+        self.Loc: dict = Loc
+
+    def __ToJson__(self) -> dict:
+        return {
+            "Kind" : "Parameter Expression",
+            "Name" : self.Name,
+            "Type" : self.VarType.__ToJson__(),
+            "Mutatable" : self.Mut ,
+            "Value" : self.Val,
+        }
+
+class DefArg(Expr):
+    def __init__(self, Val: Expr, Name: str, Loc: dict = {}):
+        self.Kind: NodeKind = NodeKind.DefArg
+        self.Name: str = Name
+        self.Val: Expr = Val
+        self.Loc: dict = Loc
+
+    def __ToJson__(self) -> dict:
+        return {
+            "Kind" : "Default Argument Expr",
+            "Name" : self.Name,
+            "Value" : self.Val
+        }
+
+class ArgumentExpr(Expr):
+    def __init__(self, Val: Expr, Loc: dict = {}, Name: str = "!PositionalArg"):
+        self.Kind: NodeKind = NodeKind.ArgExpr 
+        self.Name: str = Name
+        self.Value: Expr = Val
+        self.Loc: dict = Loc
+
+    def __ToJson__(self) -> dict:
+        return {
+            "Kind" : "ArgumentExpr",
+            "Name" : self.Name,
+            "Value" : self.Value,
+        }
+
+class IdentifierExpr(Expr):
+    def __init__(self, Name: str, Args: list[ArgumentExpr], HasArgs: bool, Loc: dict= {}):
+        self.Kind: NodeKind = NodeKind.IdentifierExpr
+        self.Name: str = Name 
+        self.Args: list[ArgumentExpr] = Args
+        self.Loc: dict = Loc 
+        self.HasArgs: bool = HasArgs
+
+    def __ToJson__(self) -> dict:
+        return {
+            "Kind" : "Identifier Expr",
+            "Name" : self.Name,
+            "Params" : self.Args,
+            "HasArgs" : self.HasArgs
+        }
+

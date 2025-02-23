@@ -1,0 +1,7 @@
+const main := fn() int {
+    have x: int = 9;
+    have y: int = 8; 
+    
+    return x + y;
+};
+
